@@ -138,13 +138,9 @@ const SubGhzProtocol ford_protocol_v0 = {
 // =============================================================================
 
 static uint8_t ford_v0_calculate_bs(uint32_t count, uint8_t button, uint8_t bs_magic) {
-    uint16_t result;
-
-    //Do the BS calculation
-    result = ((uint16_t)count & 0xFF) + bs_magic + (button << 4);
-
-    //Return the last byte of result
-    return (uint8_t)(result & 0xFF);
+    //Do the BS calculation, move right the overflow bit if neccesary
+    uint16_t result = ((uint16_t)count & 0xFF) + bs_magic + (button << 4);
+    return (uint8_t)(result - ((result & 0xFF00) ? 0x80 : 0));
 }
 
 // =============================================================================
@@ -269,8 +265,8 @@ static void decode_ford_v0(
 
     *count = ((buf[5] & 0x0F) << 16) | (buf[6] << 8) | buf[7];
 
-    //Build the BS Magic number for this fob. (Wlll have overflow bug until other pr is acceoted and overflow calc returned)
-    *bs_magic = bs - (*button << 4) - (uint8_t)(*count & 0xFF);
+    //Build the BS Magic number for this fob.
+    *bs_magic = bs + ((bs & 0x80) ? 0x80 : 0) - (*button << 4) - (uint8_t)(*count & 0xFF);
 }
 
 // =============================================================================
