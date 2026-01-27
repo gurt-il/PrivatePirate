@@ -2,6 +2,8 @@
 #include "../protopirate_app_i.h"
 #include "../helpers/protopirate_storage.h"
 
+#include "proto_pirate_icons.h"
+
 #define TAG "ProtoPirateSceneStart"
 
 typedef enum {
@@ -48,8 +50,10 @@ static void protopirate_scene_start_open_saved_captures(ProtoPirateApp* app) {
         storage_simply_mkdir(storage, PROTOPIRATE_APP_FOLDER);
     }
 
+#ifndef REMOVE_LOGS
     bool folder_ok = storage_dir_exists(storage, PROTOPIRATE_APP_FOLDER);
     FURI_LOG_D(TAG, "[5] Folder exists: %s", folder_ok ? "yes" : "no");
+#endif
 
     furi_record_close(RECORD_STORAGE);
     FURI_LOG_D(TAG, "[6] Storage closed");
@@ -71,7 +75,7 @@ static void protopirate_scene_start_open_saved_captures(ProtoPirateApp* app) {
     DialogsFileBrowserOptions browser_options;
 
     FURI_LOG_D(TAG, "[11] Calling dialog_file_browser_set_basic_options");
-    dialog_file_browser_set_basic_options(&browser_options, ".psf", NULL);
+    dialog_file_browser_set_basic_options(&browser_options, ".psf", &I_subghz_10px);
 
     FURI_LOG_D(TAG, "[12] Setting browser_options fields");
     browser_options.base_path = PROTOPIRATE_APP_FOLDER;

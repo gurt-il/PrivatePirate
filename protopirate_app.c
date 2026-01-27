@@ -213,13 +213,13 @@ bool protopirate_radio_init(ProtoPirateApp* app) {
     app->txrx->environment = subghz_environment_alloc();
     LOG_HEAP("After environment alloc");
 
-    // Load keystores
-    subghz_environment_load_keystore(app->txrx->environment, PROTOPIRATE_KEYSTORE_DIR_NAME);
-    LOG_HEAP("After keystore load");
-
     FURI_LOG_I(TAG, "Registering %zu ProtoPirate protocols", protopirate_protocol_registry.size);
     subghz_environment_set_protocol_registry(
         app->txrx->environment, (void*)&protopirate_protocol_registry);
+
+    // Load keystores
+    subghz_environment_load_keystore(app->txrx->environment, PROTOPIRATE_KEYSTORE_DIR_NAME);
+    LOG_HEAP("After keystore load");
 
     // Load ProtoPirate specific keys
     protopirate_keys_load(app->txrx->environment);
@@ -241,6 +241,7 @@ bool protopirate_radio_init(ProtoPirateApp* app) {
         return false;
     }
 
+#ifndef REMOVE_LOGS
     const char* device_name = subghz_devices_get_name(app->txrx->radio_device);
     bool is_external = device_name && strstr(device_name, "ext");
     FURI_LOG_I(
@@ -248,6 +249,7 @@ bool protopirate_radio_init(ProtoPirateApp* app) {
         "Radio device initialized: %s (%s)",
         device_name ? device_name : "unknown",
         is_external ? "external" : "internal");
+#endif
 
     subghz_devices_reset(app->txrx->radio_device);
     subghz_devices_idle(app->txrx->radio_device);

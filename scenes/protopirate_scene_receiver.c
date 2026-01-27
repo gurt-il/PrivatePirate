@@ -145,7 +145,8 @@ void protopirate_scene_receiver_on_enter(void* context) {
         return;
     }
 
-    // Now safe to access radio device
+// Now safe to access radio device
+#ifndef REMOVE_LOGS
     bool is_external = radio_device_loader_is_external(app->txrx->radio_device);
     const char* device_name = subghz_devices_get_name(app->txrx->radio_device);
 
@@ -154,6 +155,7 @@ void protopirate_scene_receiver_on_enter(void* context) {
     FURI_LOG_I(TAG, "Frequency: %lu Hz", app->txrx->preset->frequency);
     FURI_LOG_I(TAG, "Modulation: %s", furi_string_get_cstr(app->txrx->preset->name));
     FURI_LOG_I(TAG, "Auto-save: %s", app->auto_save ? "ON" : "OFF");
+#endif
 
     // Set up the receiver callback
     subghz_receiver_set_rx_callback(app->txrx->receiver, protopirate_scene_receiver_callback, app);
@@ -259,8 +261,10 @@ bool protopirate_scene_receiver_on_event(void* context, SceneManagerEvent event)
             // Debug: Log RSSI periodically (every ~5 seconds)
             static uint8_t rssi_log_counter = 0;
             if(++rssi_log_counter >= 50) {
+#ifndef REMOVE_LOGS
                 bool is_ext = radio_device_loader_is_external(app->txrx->radio_device);
                 FURI_LOG_D(TAG, "RSSI: %.1f dBm (%s)", (double)rssi, is_ext ? "EXT" : "INT");
+#endif
                 rssi_log_counter = 0;
             }
 
